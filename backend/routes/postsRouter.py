@@ -43,8 +43,7 @@ def createPost():
             return jsonify({"error": "Missing required fields"}), 400
 
         # Validate reviews array
-        if not isinstance(data['reviews'], list) or \
-           not all(isinstance(r, int) and 1 <= r <= 5 for r in data['reviews']):
+        if not isinstance(data['reviews'], list) or not all(isinstance(r, int) and 1 <= r <= 5 for r in data['reviews']):
             return jsonify({"error": "Reviews must be an array of integers (1-5)"}), 400
 
         # Serialize reviews to JSON string

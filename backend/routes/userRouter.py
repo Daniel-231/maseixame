@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request, make_response
 import sqlite3
-import secrets # For generating secure tokens
 from werkzeug.security import generate_password_hash, check_password_hash
 
+import json
 import jwt
 import datetime
 
@@ -98,7 +98,7 @@ def login():
         password = data['password']
 
         # Look up the user
-        user = conn.execute('SELECT id, password FROM users WHERE username = ?', (username)).fetchone()
+        user = conn.execute('SELECT id, password FROM users WHERE username = ?', (username,)).fetchone()
         if user is None or not check_password_hash(user['password'], password):
             return jsonify({"error": "Invalid credentials"}), 401
 
@@ -144,16 +144,32 @@ def profile():
     try:
         payloadJWT = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM]) # Decode the token and verify its signature and expiration
         user_id = payloadJWT.get("user_id")
+        
     except jwt.ExpiredSignatureError:
         return jsonify({"error": "Token has expired"}), 401
+    
     except jwt.InvalidTokenError:
         return jsonify({"error": "Invalid token"}), 401
 
     
     try:
-        user = conn.execute('SELECT id, username FROM users WHERE id = ?', (user_id,)).fetchone() # Retrieve the user based on the user_id from the token
+        user = conn.execute('SELECT id, username FROM users WHERE id = ?', (user_id,)).fetchone() # Get User Info
+        posts = conn.execute('SELECT * FROM posts WHERE userId = ?', (user_id,)).fetchall() # Get User Posts
+        
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+        if not posts:
+            return jsonify({"message": "No posts found"}), 404
+        
+        posts_list = []
+        for post in posts:
+            post_data = dict(post)
+            post_data['reviews'] = json.loads(post_data['reviews'])
+            posts_list.append(post_data)
+            
         if user:
-            return jsonify({"id": user['id'], "username": user['username']}), 200
+            return jsonify({"id": user['id'], "username": user['username'], "posts": posts_list}), 200
         else:
             return jsonify({"error": "User not found"}), 404
     except sqlite3.Error as e:

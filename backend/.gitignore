@@ -1,31 +1,29 @@
-# Byte-compiled / optimized / DLL files
+# Python bytecode and cache
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environment
+# Virtual environments
 venv/
 env/
 ENV/
 .venv/
 .ENV/
 
-# Flask-related
+# Flask
 instance/
-*.pyc
+*.pyc  # Covered earlier, but explicit for clarity
 *.pyo
 
-# macOS files
+# macOS metadata
 .DS_Store
 
-# VS Code settings
+# Editor/IDE
 .vscode/
 
-# Python egg info
+# Packaging/build artifacts
 *.egg-info/
 *.egg
-
-# pip wheel files
 *.whl
 
 # PyInstaller
@@ -33,43 +31,37 @@ dist/
 build/
 *.spec
 
-# pytest
+# Testing and coverage
 .cache/
 .pytest_cache/
-
-# Coverage reports
 htmlcov/
 .coverage
 .coverage.*
-.cache
-nosetests.xml
 coverage.xml
 *.cover
 
-# mypy
+# Type checking
 .mypy_cache/
 .dmypy.json
 dmypy.json
 
-# Pyre type checker
+# Pyre
 .pyre/
 
-# Logs
+# Logs and databases
 *.log
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# SQLite database
 *.sqlite3
 *.db
 
-# Environment variable files
+# Jupyter
+.ipynb_checkpoints
+
+# Environment files
 .env
 .env.*
 
-# Node modules (in case you use JS tooling)
+# Node.js (if applicable)
 node_modules/
 
-# Static file cache (optional)
+# Optional static cache
 static/*.cache.*
