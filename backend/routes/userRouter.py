@@ -6,10 +6,16 @@ import json
 import jwt
 import datetime
 
+# .env 
+from dotenv import load_dotenv
+import os
+
+load_dotenv(dotenv_path='../.env')
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHM = os.getenv('ALGORITHM')
+
 user_bp = Blueprint('user', __name__) # Blueprint for user-related routes
 
-SECRET_KEY = 'your_secret_key_here' #JWT
-ALGORITHM = 'HS256'
 
 def get_db_connection(): # Database connection function
     conn = sqlite3.connect('database/app.db')
