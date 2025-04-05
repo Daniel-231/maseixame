@@ -1,0 +1,20 @@
+from flask import Flask, jsonify
+import sqlite3
+
+from routes.userRouter import user_bp
+from routes.postsRouter import posts_bp
+
+app = Flask(__name__)
+
+# Function to connect to the database
+def get_db_connection():
+    conn = sqlite3.connect('database/app.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+app.register_blueprint(user_bp, url_prefix='/user')  # Correct blueprint registration
+app.register_blueprint(posts_bp, url_prefix='/posts')
+
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
