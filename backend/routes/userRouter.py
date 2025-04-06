@@ -41,9 +41,7 @@ def register():
         hashed_password = generate_password_hash(password)
         
         # Check for existing username
-        existing_user = conn.execute(
-            'SELECT id FROM users WHERE username = ?', (username,)
-        ).fetchone()
+        existing_user = conn.execute('SELECT id FROM users WHERE username = ?', (username,)).fetchone()
         
         if existing_user:
             return jsonify({"error": "Username already exists"}), 409

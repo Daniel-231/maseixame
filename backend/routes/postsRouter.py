@@ -4,6 +4,9 @@ import json  # Required for JSON serialization
 from datetime import datetime  # For timestamp handling
 import jwt  # For JWT handling
 
+
+from middleware.checkAuthentication import check_authentication
+
 # .env
 import os
 from dotenv import load_dotenv
@@ -21,6 +24,7 @@ def get_db_connection():
 posts_bp = Blueprint('posts', __name__)
 
 @posts_bp.route('/all', methods=['GET'])
+@check_authentication # Authentication Middleware
 def get_posts():
     conn = get_db_connection()
     try:
@@ -42,6 +46,7 @@ def get_posts():
         conn.close()
 
 @posts_bp.route('/create', methods=['POST'])
+@check_authentication # Authentication Middleware
 def createPost():
     conn = None
     try:
@@ -111,6 +116,7 @@ def createPost():
 
 
 @posts_bp.route('/<string:title>', methods=['GET'])
+@check_authentication # Authentication Middleware
 def get_post_by_title(title):
     conn = get_db_connection()
     
