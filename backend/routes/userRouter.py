@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import jwt
 import datetime
+import uuid
 
 # .env 
 from dotenv import load_dotenv
@@ -22,6 +23,8 @@ def get_db_connection(): # Database connection function
     conn.row_factory = sqlite3.Row
     return conn
 
+def generate_user_id():
+    return str(uuid.uuid4())
 
 # Register
 @user_bp.route('/register', methods=['POST'])
@@ -29,6 +32,7 @@ def register():
     conn = get_db_connection()
     try:
         data = request.get_json()
+        user_id = generate_user_id()  # Generate random UUID
         
         # Validate required fields
         if not data or 'username' not in data or 'password' not in data:
@@ -46,27 +50,24 @@ def register():
         if existing_user:
             return jsonify({"error": "Username already exists"}), 409
         
-        # Insert new user
-        cursor = conn.execute(
-            '''INSERT INTO users (username, password)
-               VALUES (?, ?)''',
-            (username, hashed_password)
+        # Insert new user with UUID
+        conn.execute(
+            'INSERT INTO users (id, username, password) VALUES (?, ?, ?)',
+            (user_id, username, hashed_password)
         )
         conn.commit()
-        user_id = cursor.lastrowid
         
-        
-        # Create response with a cookie
-        payloadJWT  = {
-            'user_id': user_id,
+        # Create response with a cookie using the UUID
+        payloadJWT = {
+            'user_id': user_id,  # Use the UUID here
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)
         }
         token = jwt.encode(payloadJWT, SECRET_KEY, algorithm=ALGORITHM)
         
-        # Create response with JWT in both the JSON and as an HttpOnly cookie
+        # Create response with JWT
         response = make_response(jsonify({
             "message": "User created successfully",
-            "user_id": user_id,
+            "user_id": user_id,  # Use the UUID here
             "token": token
         }), 201)
         

@@ -6,7 +6,11 @@ from routes.userRouter import user_bp
 from routes.postsRouter import posts_bp
 
 app = Flask(__name__)
-CORS(app) # Allow all origins
+CORS(
+    app,
+    resources={r"/*": {"origins": "http://localhost:3000"}},
+    supports_credentials=True  # Allow cookies/auth headers
+)
 
 # Function to connect to the database
 def get_db_connection():

@@ -16,13 +16,14 @@ load_dotenv(dotenv_path='../.env')
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
 
-def get_db_connection():
+def get_db_connection(): # Connect to SQLite database
     conn = sqlite3.connect('database/app.db')
     conn.row_factory = sqlite3.Row
     return conn
 
 posts_bp = Blueprint('posts', __name__)
 
+# Get All Posts
 @posts_bp.route('/all', methods=['GET'])
 @check_authentication # Authentication Middleware
 def get_posts():
@@ -45,6 +46,7 @@ def get_posts():
     finally:
         conn.close()
 
+# Create Post
 @posts_bp.route('/create', methods=['POST'])
 @check_authentication # Authentication Middleware
 def createPost():
@@ -114,7 +116,7 @@ def createPost():
         if conn:
             conn.close()
 
-
+# Get Post By Title
 @posts_bp.route('/<string:title>', methods=['GET'])
 @check_authentication # Authentication Middleware
 def get_post_by_title(title):
@@ -138,6 +140,7 @@ def get_post_by_title(title):
             conn.close()
 
 
+# User Enter Review To Post
 @posts_bp.route('/<string:title>', methods=['PUT'])
 @check_authentication
 def put_post_review(title):
