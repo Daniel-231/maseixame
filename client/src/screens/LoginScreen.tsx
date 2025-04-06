@@ -18,7 +18,7 @@ const LoginScreen: React.FC = () => {
             const response = await axios.post("http://localhost:5000/user/login", {
                 username,
                 password,
-            });
+            }, {withCredentials: true});
             console.log("Login successful:", response.data);
             navigate('/');
         }

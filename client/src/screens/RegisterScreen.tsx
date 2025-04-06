@@ -22,7 +22,7 @@ const RegisterScreen: React.FC = () => {
             const response = await axios.post("http://localhost:5000/user/register", {
                 username,
                 password,
-            });
+            }, {withCredentials: true});
             console.log("Registration successful:", response.data);
             // Redirect to home page
             navigate('/');

@@ -8,8 +8,11 @@ from routes.postsRouter import posts_bp
 app = Flask(__name__)
 CORS(
     app,
-    resources={r"/*": {"origins": "http://localhost:3000"}},
-    supports_credentials=True  # Allow cookies/auth headers
+    origins=["http://localhost:3000"],
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization"],
+    expose_headers=["Set-Cookie"],
+    methods=["GET", "POST", "PUT", "DELETE"]
 )
 
 # Function to connect to the database
