@@ -136,3 +136,62 @@ def get_post_by_title(title):
     finally:
         if conn:
             conn.close()
+
+
+@posts_bp.route('/<string:title>', methods=['PUT'])
+@check_authentication
+def put_post_review(title):
+    conn = get_db_connection()
+    try:
+        data = request.get_json()
+        if 'reviews' not in data:
+            return jsonify({"error": "Review is required"}), 400
+        
+        # Validate single review
+        if not isinstance(data['reviews'], int) or not (1 <= data['reviews'] <= 5):
+            return jsonify({"error": "Review must be an integer between 1 and 5"}), 400
+        
+        post = conn.execute('SELECT reviews FROM posts WHERE title = ?', (title,)).fetchone()
+        if not post:
+            return jsonify({"error": "Post Not Found"}), 404
+        
+        try:
+            # Convert string to list, handle case where reviews might be empty
+            existing_reviews = json.loads(post['reviews']) if post['reviews'] else []
+            if not isinstance(existing_reviews, list):
+                existing_reviews = []
+            
+            # Add new review to the list
+            existing_reviews.append(data['reviews'])
+            
+            # Convert back to JSON string for storage
+            reviews_json = json.dumps(existing_reviews)
+            
+            # Update the database
+            conn.execute('UPDATE posts SET reviews = ? WHERE title = ?', (reviews_json, title))
+            conn.commit()
+            
+            return jsonify({
+                "message": "Review added successfully",
+                "reviews": existing_reviews
+            }), 200
+            
+        except json.JSONDecodeError:
+            # Handle case where reviews column contains invalid JSON
+            new_reviews = [data['reviews']]
+            reviews_json = json.dumps(new_reviews)
+            conn.execute('UPDATE posts SET reviews = ? WHERE title = ?', (reviews_json, title))
+            conn.commit()
+            
+            return jsonify({
+                "message": "Review added successfully",
+                "reviews": new_reviews
+            }), 200
+            
+    except sqlite3.Error as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+    finally:
+        if conn:
+            conn.close()
