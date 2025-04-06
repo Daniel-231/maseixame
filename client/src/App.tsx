@@ -1,11 +1,25 @@
-import React from 'react';
+import React, {use, useEffect} from 'react';
+import axios from 'axios';
 
+const App: React.FC = () => {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/posts/all');
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-export default function App() {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <div className="App">
-      <p>Hello, World</p>
+    <div>
+      <p>This is a simple React application.</p>
     </div>
   );
 }
 
+export default App;

@@ -1,10 +1,12 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import sqlite3
 
 from routes.userRouter import user_bp
 from routes.postsRouter import posts_bp
 
 app = Flask(__name__)
+CORS(app) # Allow all origins
 
 # Function to connect to the database
 def get_db_connection():
