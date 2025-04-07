@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 
 import { useNavigate } from "react-router-dom";
 
@@ -12,14 +12,14 @@ const RegisterScreen: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
         if (password !== confirmPassword) {
             setError("Passwords do not match");
             return;
         }
         try {
-            const response = await axios.post("http://localhost:5000/user/register", {
+            const response: AxiosResponse<void> = await axios.post("http://localhost:5000/user/register", {
                 username,
                 password,
             }, {withCredentials: true});
@@ -46,7 +46,8 @@ const RegisterScreen: React.FC = () => {
                         id="username"
                         name="username"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+
                     />
                 </div>
                 <div>
@@ -56,7 +57,7 @@ const RegisterScreen: React.FC = () => {
                         id="password"
                         name="password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                     />
                 </div>
                 <div>
@@ -66,7 +67,7 @@ const RegisterScreen: React.FC = () => {
                         id="confirmPassword"
                         name="confirmPassword"
                         value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
                     />
                 </div>
                 <button type="submit">Register</button>

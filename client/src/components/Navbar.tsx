@@ -29,6 +29,7 @@ const Navbar = () => {
             {isLoggedIn && (
                 <>
                     <a href="/">Home</a>
+                    <a href="/create">Create Post</a>
                     <button onClick={HandleLogout}>Logout</button>
                 </>
             )}

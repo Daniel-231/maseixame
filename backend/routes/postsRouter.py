@@ -141,9 +141,9 @@ def get_post_by_title(title):
 
 
 # User Enter Review To Post
-@posts_bp.route('/<string:title>', methods=['PUT'])
+@posts_bp.route('/review/<int:id>', methods=['PUT'])
 @check_authentication
-def put_post_review(title):
+def put_post_review(id):
     conn = get_db_connection()
     try:
         data = request.get_json()
@@ -154,7 +154,7 @@ def put_post_review(title):
         if not isinstance(data['reviews'], int) or not (1 <= data['reviews'] <= 5):
             return jsonify({"error": "Review must be an integer between 1 and 5"}), 400
         
-        post = conn.execute('SELECT reviews FROM posts WHERE title = ?', (title,)).fetchone()
+        post = conn.execute('SELECT reviews FROM posts WHERE id = ?', (id,)).fetchone()
         if not post:
             return jsonify({"error": "Post Not Found"}), 404
         
@@ -171,7 +171,7 @@ def put_post_review(title):
             reviews_json = json.dumps(existing_reviews)
             
             # Update the database
-            conn.execute('UPDATE posts SET reviews = ? WHERE title = ?', (reviews_json, title))
+            conn.execute('UPDATE posts SET reviews = ? WHERE id = ?', (reviews_json, id))
             conn.commit()
             
             return jsonify({
@@ -183,7 +183,7 @@ def put_post_review(title):
             # Handle case where reviews column contains invalid JSON
             new_reviews = [data['reviews']]
             reviews_json = json.dumps(new_reviews)
-            conn.execute('UPDATE posts SET reviews = ? WHERE title = ?', (reviews_json, title))
+            conn.execute('UPDATE posts SET reviews = ? WHERE id= ?', (reviews_json, id))
             conn.commit()
             
             return jsonify({
