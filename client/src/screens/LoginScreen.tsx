@@ -6,8 +6,10 @@ import { useNavigate } from "react-router-dom";
 
 
 const LoginScreen: React.FC = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+    //const [username, setUsername] = useState("");
+    //const [password, setPassword] = useState("");
+    let username: string = "";
+    let password: string = "";
     const [error, setError] = useState("");
 
     const navigate = useNavigate();

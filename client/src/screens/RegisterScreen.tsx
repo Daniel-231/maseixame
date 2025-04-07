@@ -33,32 +33,46 @@ const RegisterScreen: React.FC = () => {
                 setError("An unexpected error occurred");
             }
         }
-        finally {
-            setUsername("");
-            setPassword("");
-            setConfirmPassword("");
-        }
     };
 
     return (
         <div>
             <h1>Register</h1>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="username">Username:</label>
-                    <input type="text" id="username" name="username" />
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
                 </div>
                 <div>
                     <label htmlFor="password">Password:</label>
-                    <input type="password" id="password" name="password" />
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
                 </div>
                 <div>
                     <label htmlFor="confirmPassword">Confirm Password:</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" />
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
                 </div>
-                <button onClick={handleSubmit} type="submit">Register</button>
+                <button type="submit">Register</button>
                 {error && <p style={{ color: "red" }}>{error}</p>}
             </form>
+
         </div>
     )
 }
