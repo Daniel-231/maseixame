@@ -1,25 +1,39 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import axios from "axios";
+import useAuthCheck from "../controllers/useAuthCheck";
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
+    const { status: isLoggedIn, loading } = useAuthCheck();
+
+    if (loading) return null; // ✅ Safe now :)
+
+    const HandleLogout: () => Promise<void> = async (): Promise<void> => {
+        try {
+            await axios.post("http://localhost:5000/user/logout", null, {
+                withCredentials: true,
+            });
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
-      <nav className="navbar">
-        <div className="navbar-container">          
-          <div className="nav-menu">
-            <Link to="/" className="nav-link">
-              Home
-            </Link>
-            <Link to="/register" className="nav-link">
-              Register
-            </Link>
-            <Link to="/login" className="nav-link">
-              Login
-            </Link>
-          </div>
-        </div>
-      </nav>
+        <nav>
+            {!isLoggedIn && (
+                <>
+                    <a href="/login">Login</a>
+                    <a href="/register">Register</a>
+                </>
+            )}
+            {isLoggedIn && (
+                <>
+                    <a href="/">Home</a>
+                    <button onClick={HandleLogout}>Logout</button>
+                </>
+            )}
+        </nav>
     );
-  };
+};
 
 export default Navbar;

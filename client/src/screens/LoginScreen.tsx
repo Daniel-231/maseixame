@@ -29,10 +29,6 @@ const LoginScreen: React.FC = () => {
                 setError("An unexpected error occurred");
             }
         }
-        finally {
-            setUsername("");
-            setPassword("");
-        }
     }
     return (
         <div>

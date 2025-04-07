@@ -181,3 +181,30 @@ def profile():
         return jsonify({"error": str(e)}), 500
     finally:
         conn.close()
+        
+        
+# Logout
+@user_bp.route('/logout', methods=['POST'])
+def logout():
+    response = make_response(jsonify({"message": "Logged out successfully"}), 200)
+    response.set_cookie('authCookie', '', expires=0)
+    return response
+
+
+# Check User Login Status
+@user_bp.route('/status', methods=['GET'])
+def check_status():
+    token = request.cookies.get('authCookie')
+    if not token:
+        return jsonify({"logged_in": False}), 200
+
+    try:
+        payloadJWT = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payloadJWT.get("user_id")
+        return jsonify({"logged_in": True, "user_id": user_id}), 200
+    except jwt.ExpiredSignatureError:
+        return jsonify({"logged_in": False}), 200
+    except jwt.InvalidTokenError:
+        return jsonify({"logged_in": False}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

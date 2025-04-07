@@ -38,8 +38,8 @@ const HomeScreen: React.FC = () => {
       {posts.length > 0 ? (
         posts.map((post) => (
           <div key={post.title}>
-            <h2>{post.title}</h2>
-            <p>{post.description}</p>
+            <h2>Title: {post.title}</h2>
+            <p>Description: {post.description}</p>
             <p>Reviews: {post.reviews.map((index: number) => {
               return (
                 <span key={index}>
@@ -49,7 +49,7 @@ const HomeScreen: React.FC = () => {
               );
             })}</p>
             <p>
-              {post.location}
+              Location: {post.location}
             </p>
           </div>
         ))
