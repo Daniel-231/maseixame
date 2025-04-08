@@ -1,8 +1,8 @@
-import React from "react";
+import React, {FC} from "react";
 import axios from "axios";
 import useAuthCheck from "../controllers/useAuthCheck";
 
-const Navbar = () => {
+const Navbar: FC = () => {
     const { status: isLoggedIn, loading } = useAuthCheck();
 
     if (loading) return null; // ✅ Safe now :)
