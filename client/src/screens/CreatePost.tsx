@@ -1,5 +1,6 @@
-import React, { FC, useState, ChangeEvent } from "react";
+import React, {FC, useState, ChangeEvent, useContext} from "react";
 import axios from "axios";
+import {ErrorContext} from "../controllers/CustomErrorHandler";
 
 const CreatePost: FC = () => {
     const [title, setTitle] = useState<string>("");
@@ -7,6 +8,15 @@ const CreatePost: FC = () => {
     const [location, setLocation] = useState<string>("");
     const [photo, setPhoto] = useState<string>("");
     const reviews: string[] = [];
+
+
+    const errorContext = useContext(ErrorContext);
+
+    if (!errorContext) {
+        throw new Error("HomeScreen must be used within a CustomErrorHandler");
+    }
+
+    const { setError } = errorContext;
 
     const handleCreatePost = async (): Promise<void> => {
         try {
@@ -24,7 +34,8 @@ const CreatePost: FC = () => {
                 }
             );
             console.log("Post response:", response.data);
-        } catch (error) {
+        } catch (error: any) {
+            setError(error);
             console.error("Error creating post:", error);
         }
     };

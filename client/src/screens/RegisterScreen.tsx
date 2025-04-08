@@ -1,21 +1,31 @@
-import React from "react";
+import React, {useContext} from "react";
 import { useState } from "react";
 import axios, {AxiosResponse} from "axios";
 
 import { useNavigate } from "react-router-dom";
+import {ErrorContext} from "../controllers/CustomErrorHandler";
 
 const RegisterScreen: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [error, setError] = useState("");
+    //const [error, setError] = useState("");
 
     const navigate = useNavigate();
+
+    // Custom Error
+    const errorContext = useContext(ErrorContext);
+
+    if (!errorContext) {
+        throw new Error("HomeScreen must be used within a CustomErrorHandler");
+    }
+
+    const { setError } = errorContext;
 
     const handleSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
         if (password !== confirmPassword) {
-            setError("Passwords do not match");
+            setError(new Error("Passwords do not match"));
             return;
         }
         try {
@@ -28,9 +38,9 @@ const RegisterScreen: React.FC = () => {
             navigate('/');
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                setError(error.response?.data.message || "Registration failed");
+                setError(new Error(error.response?.data.message || "Registration failed"));
             } else {
-                setError("An unexpected error occurred");
+                setError(new Error("An unexpected error occurred"));
             }
         }
     };
@@ -71,7 +81,6 @@ const RegisterScreen: React.FC = () => {
                     />
                 </div>
                 <button type="submit">Register</button>
-                {error && <p style={{ color: "red" }}>{error}</p>}
             </form>
 
         </div>

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
+import { ErrorContext } from '../controllers/CustomErrorHandler';
 
-// Updated Post interface with id as number
 type Post = {
     id: number;
     title: string;
@@ -12,9 +12,15 @@ type Post = {
 
 const HomeScreen: React.FC = () => {
     const [posts, setPosts] = useState<Post[]>([]);
-    const [error, setError] = useState<string>('');
-    // Map to keep track of the review rating input for each post by id
     const [reviewMap, setReviewMap] = useState<{ [key: number]: number | '' }>({});
+
+    const errorContext = useContext(ErrorContext);
+
+    if (!errorContext) {
+        throw new Error("HomeScreen must be used within a CustomErrorHandler");
+    }
+
+    const { setError } = errorContext;
 
     const fetchData = async () => {
         try {
@@ -24,16 +30,13 @@ const HomeScreen: React.FC = () => {
             setPosts(response.data);
             console.log('Fetched posts:', response.data);
         } catch (error) {
-            setError('Failed to fetch posts');
+            setError(new Error('Failed to fetch posts'));
             console.error('Error fetching data:', error);
         }
     };
 
-    // Updated function so postId is a number.
     const HandleAddReview = async (postId: number) => {
-        // Get the review rating for the current post
         const review = reviewMap[postId];
-        // Validate that review is within allowed limits
         if (review === '' || review < 1 || review > 5) {
             console.error("Review must be between 1 and 5");
             return;
@@ -44,21 +47,19 @@ const HomeScreen: React.FC = () => {
                 { reviews: review },
                 { withCredentials: true }
             );
-            // Optionally, you may want to update the UI or clear the input after submission.
-            // For instance, clearing the input:
             setReviewMap(prev => ({ ...prev, [postId]: '' }));
         } catch (e) {
+            setError(new Error("Failed to add review"));
             console.error(e);
         }
     };
 
     useEffect(() => {
         fetchData().catch((err: string): void => console.error("Error:", err));
-    }, []);
+    }, [reviewMap]);
 
     return (
         <div>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
             {posts.length > 0 ? (
                 posts.map((post) => (
                     <div key={post.id}>
@@ -70,7 +71,6 @@ const HomeScreen: React.FC = () => {
                                 {index < post.reviews.length - 1 && ", "}
                             </span>
                         ))}
-                        {/* Input field for the review rating with constraints */}
                         <input
                             type="number"
                             min="1"

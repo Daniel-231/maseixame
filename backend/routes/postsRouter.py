@@ -87,19 +87,21 @@ def createPost():
             return jsonify({"error": "User not found"}), 404
 
         # Insert post with the userId from the token
-        cursor = conn.execute('''
-            INSERT INTO posts 
-            (userId, reviews, title, description, createdAt, photo, location)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            user_id,  # Use the userId from the token
-            reviews_json,
-            data['title'],
-            data['description'],
-            datetime.utcnow().isoformat(),  # Server-generated timestamp
-            data['photo'],
-            data['location']
-        ))
+        if reviews_json != "" and data['title'] != "" and data['description'] != "" and data['photo'] != "":
+
+            cursor = conn.execute('''
+                INSERT INTO posts 
+                (userId, reviews, title, description, createdAt, photo, location)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                user_id,  # Use the userId from the token
+                reviews_json,
+                data['title'],
+                data['description'],
+                datetime.utcnow().isoformat(),  # Server-generated timestamp
+                data['photo'],
+                data['location']
+            ))
 
         conn.commit()
 

@@ -32,55 +32,37 @@ def register():
     conn = get_db_connection()
     try:
         data = request.get_json()
-        user_id = generate_user_id()  # Generate random UUID
-        
+
         # Validate required fields
         if not data or 'username' not in data or 'password' not in data:
             return jsonify({"error": "Missing username or password"}), 400
-        
+
         username = data['username']
         password = data['password']
-        
+
+        if not username or not password:
+            return jsonify({"error": "Username and password cannot be empty"}), 400
+
         # Hash the password
         hashed_password = generate_password_hash(password)
-        
+
         # Check for existing username
         existing_user = conn.execute('SELECT id FROM users WHERE username = ?', (username,)).fetchone()
-        
+
         if existing_user:
             return jsonify({"error": "Username already exists"}), 409
-        
-        # Insert new user with UUID
+
+        # Generate user ID
+        user_id = generate_user_id()  # Generate random UUID
+
+        # Insert the new user into the database
         conn.execute(
             'INSERT INTO users (id, username, password) VALUES (?, ?, ?)',
             (user_id, username, hashed_password)
         )
         conn.commit()
-        
-        # Create response with a cookie using the UUID
-        payloadJWT = {
-            'user_id': user_id,  # Use the UUID here
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)
-        }
-        token = jwt.encode(payloadJWT, SECRET_KEY, algorithm=ALGORITHM)
-        
-        # Create response with JWT
-        response = make_response(jsonify({
-            "message": "User created successfully",
-            "user_id": user_id,  # Use the UUID here
-            "token": token
-        }), 201)
-        
-        response.set_cookie(
-            'authCookie', 
-            token, 
-            httponly=True, 
-            secure=True, 
-            samesite='Lax',
-            max_age=60*60  # 1 hour expiration
-        )
 
-        return response
+        return jsonify({"message": "User registered successfully", "user_id": user_id}), 201
 
     except sqlite3.Error as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
