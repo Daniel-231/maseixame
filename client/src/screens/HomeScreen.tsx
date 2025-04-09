@@ -170,6 +170,19 @@ const HomeScreen: React.FC = () => {
         );
     };
 
+    // Delete Post User Owns.
+    const handleDeletePost = async (postId: number) => {
+        try {
+            await axios.delete(`http://localhost:5000/posts/delete/${postId}`, {
+                withCredentials: true,
+            });
+            setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+        } catch (error) {
+            setError(new Error("Failed to delete post"));
+            console.error(error);
+        }
+    }
+
     return (
         <div className="home-screen">
             {posts.length > 0 ? (
@@ -238,6 +251,7 @@ const HomeScreen: React.FC = () => {
                                     >
                                         {userReviews[post.id] ? 'Update Review' : 'Post Review'}
                                     </button>
+                                    <button className="delete-button" onClick={() => handleDeletePost(post.id)}>Delete</button>
                                 </div>
                             )}
                         </div>
