@@ -1,6 +1,7 @@
 import React, {FC, useState, ChangeEvent, useContext} from "react";
 import axios from "axios";
 import {ErrorContext} from "../controllers/CustomErrorHandler";
+import '../styles/createscreen.css'; // Import the CSS file
 
 const CreatePost: FC = () => {
     const [title, setTitle] = useState<string>("");
@@ -13,7 +14,7 @@ const CreatePost: FC = () => {
     const errorContext = useContext(ErrorContext);
 
     if (!errorContext) {
-        throw new Error("HomeScreen must be used within a CustomErrorHandler");
+        throw new Error("CreatePost must be used within a CustomErrorHandler");
     }
 
     const { setError } = errorContext;
@@ -34,9 +35,11 @@ const CreatePost: FC = () => {
                 }
             );
             console.log("Post response:", response.data);
+            // Maybe show a success message or redirect the user
         } catch (error: any) {
             setError(error);
             console.error("Error creating post:", error);
+            // Maybe show an error message to the user
         }
     };
 
@@ -53,37 +56,57 @@ const CreatePost: FC = () => {
     };
 
     return (
-        <div style={{ padding: "1rem", maxWidth: "500px", margin: "0 auto" }}>
-            <h2>Create Post</h2>
+        <div className="create-post-screen">
+            <h2 className="create-post-title">Create Post</h2>
 
-            <input
-                type="text"
-                placeholder="Title"
-                value={title}
-                onChange={handleInputChange(setTitle)}
-            /><br /><br />
+            <div className="form-group">
+                <label htmlFor="title" className="form-label">Title:</label>
+                <input
+                    type="text"
+                    id="title"
+                    className="form-input"
+                    placeholder="Title"
+                    value={title}
+                    onChange={handleInputChange(setTitle)}
+                />
+            </div>
 
-            <textarea
-                placeholder="Description"
-                value={description}
-                onChange={handleTextAreaChange}
-            /><br /><br />
+            <div className="form-group">
+                <label htmlFor="description" className="form-label">Description:</label>
+                <textarea
+                    id="description"
+                    className="form-textarea"
+                    placeholder="Description"
+                    value={description}
+                    onChange={handleTextAreaChange}
+                />
+            </div>
 
-            <input
-                type="text"
-                placeholder="Location"
-                value={location}
-                onChange={handleInputChange(setLocation)}
-            /><br /><br />
+            <div className="form-group">
+                <label htmlFor="location" className="form-label">Location:</label>
+                <input
+                    type="text"
+                    id="location"
+                    className="form-input"
+                    placeholder="Location"
+                    value={location}
+                    onChange={handleInputChange(setLocation)}
+                />
+            </div>
 
-            <input
-                type="text"
-                placeholder="Photo URL"
-                value={photo}
-                onChange={handleInputChange(setPhoto)}
-            /><br /><br />
+            <div className="form-group">
+                <label htmlFor="photo" className="form-label">Photo URL:</label>
+                <input
+                    type="text"
+                    id="photo"
+                    className="form-input"
+                    placeholder="Photo URL"
+                    value={photo}
+                    onChange={handleInputChange(setPhoto)}
+                />
+            </div>
 
-            <button type="button" onClick={handleCreatePost}>
+            <button type="button" className="submit-button" onClick={handleCreatePost}>
                 Submit Post
             </button>
         </div>
