@@ -131,40 +131,68 @@ def profile():
     try:
         payloadJWT = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM]) # Decode the token and verify its signature and expiration
         user_id = payloadJWT.get("user_id")
-        
+
     except jwt.ExpiredSignatureError:
         return jsonify({"error": "Token has expired"}), 401
-    
+
     except jwt.InvalidTokenError:
         return jsonify({"error": "Invalid token"}), 401
 
-    
+
     try:
         user = conn.execute('SELECT id, username FROM users WHERE id = ?', (user_id,)).fetchone() # Get User Info
-        posts = conn.execute('SELECT * FROM posts WHERE userId = ?', (user_id,)).fetchall() # Get User Posts
-        
+
         if not user:
             return jsonify({"error": "User not found"}), 404
-        
+
+        # Get User Posts with reviews
+        posts = conn.execute('''
+            SELECT p.*
+            FROM posts p
+            WHERE p.userId = ?
+        ''', (user_id,)).fetchall()
+
         if not posts:
-            return jsonify({"message": "No posts found"}), 404
-        
+            return jsonify({
+                "id": user['id'],
+                "username": user['username'],
+                "posts": []
+            }), 200
+
         posts_list = []
         for post in posts:
             post_data = dict(post)
-            post_data['reviews'] = json.loads(post_data['reviews'])
+
+            # Get reviews for this post
+            reviews = conn.execute('''
+                SELECT r.rating, r.userId, u.username
+                FROM reviews r
+                JOIN users u ON r.userId = u.id
+                WHERE r.postId = ?
+            ''', (post_data['id'],)).fetchall()
+
+            # Calculate average rating
+            ratings = [review['rating'] for review in reviews]
+            post_data['reviews'] = {
+                'ratings': [dict(r) for r in reviews],
+                'average': sum(ratings) / len(ratings) if ratings else 0,
+                'count': len(ratings)
+            }
+
             posts_list.append(post_data)
-            
-        if user:
-            return jsonify({"id": user['id'], "username": user['username'], "posts": posts_list}), 200
-        else:
-            return jsonify({"error": "User not found"}), 404
+
+        return jsonify({
+            "id": user['id'],
+            "username": user['username'],
+            "posts": posts_list
+        }), 200
+
     except sqlite3.Error as e:
         return jsonify({"error": str(e)}), 500
     finally:
         conn.close()
-        
-        
+
+
 # Logout
 @user_bp.route('/logout', methods=['POST'])
 def logout():
