@@ -176,77 +176,7 @@ def get_post_by_title(title):
             conn.close()
 
 
-# User Enter Review To Post (new implementation)
-@posts_bp.route('/review/<int:id>', methods=['POST'])
-@check_authentication
-def add_post_review(id):
-    conn = get_db_connection()
-    try:
-        data = request.get_json()
-        if 'rating' not in data:
-            return jsonify({"error": "Rating is required"}), 400
-
-        # Validate rating
-        if not isinstance(data['rating'], int) or not (1 <= data['rating'] <= 5):
-            return jsonify({"error": "Rating must be an integer between 1 and 5"}), 400
-
-        # Get post to verify it exists
-        post = conn.execute('SELECT id FROM posts WHERE id = ?', (id,)).fetchone()
-        if not post:
-            return jsonify({"error": "Post Not Found"}), 404
-
-        # Retrieve user ID from token
-        token = request.cookies.get('authCookie')
-        payloadJWT = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payloadJWT.get("user_id")
-
-        # Check if user already reviewed this post
-        existing_review = conn.execute(
-            'SELECT id FROM reviews WHERE userId = ? AND postId = ?',
-            (user_id, id)
-        ).fetchone()
-
-        if existing_review:
-            return jsonify({"error": "You have already reviewed this post"}), 400
-
-        # Add new review
-        cursor = conn.execute(
-            'INSERT INTO reviews (userId, postId, rating) VALUES (?, ?, ?)',
-            (user_id, id, data['rating'])
-        )
-        conn.commit()
-
-        # Get all reviews for this post to return
-        reviews = conn.execute('''
-            SELECT r.rating, r.userId, u.username
-            FROM reviews r
-            JOIN users u ON r.userId = u.id
-            WHERE r.postId = ?
-        ''', (id,)).fetchall()
-
-        # Calculate average rating
-        ratings = [review['rating'] for review in reviews]
-        review_data = {
-            'ratings': [dict(r) for r in reviews],
-            'average': sum(ratings) / len(ratings) if ratings else 0,
-            'count': len(ratings)
-        }
-
-        return jsonify({
-            "message": "Review added successfully",
-            "reviews": review_data
-        }), 201
-
-    except sqlite3.IntegrityError:
-        return jsonify({"error": "You have already reviewed this post"}), 400
-    except sqlite3.Error as e:
-        return jsonify({"error": f"Database error: {str(e)}"}), 500
-    except Exception as e:
-        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
-    finally:
-        if conn:
-            conn.close()
-
+#
 
 # Add a Review
 @posts_bp.route('/review/<int:id>', methods=['PUT'])
