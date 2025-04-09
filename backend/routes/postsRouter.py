@@ -267,19 +267,42 @@ def update_post_review(id):
 @posts_bp.route('/delete/<int:id>', methods=['DELETE'])
 @check_authentication
 def delete_Post(id):
-    conn = get_db_connection();
+    conn = get_db_connection()
     try:
-        post = conn.execute('DELETE FROM posts WHERE id = ?', (id,))
-        if not post:
-            return jsonify({"error": "Post Not Found"}), 404
+        token = request.cookies.get('authCookie')
+        if not token:
+            conn.close()
+            return jsonify({"error": "Token is missing"}), 401
+
+        try:
+            payloadJWT = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            user_id = payloadJWT.get("user_id")
+            if user_id is None:
+                conn.close()
+                return jsonify({"error": "Invalid token"}), 401
+        except jwt.ExpiredSignatureError:
+            conn.close()
+            return jsonify({"error": "Token has expired"}), 401
+        except jwt.InvalidTokenError:
+            conn.close()
+            return jsonify({"error": "Invalid token"}), 401
+
+        # Now, use the user_id in your DELETE query
+        cursor = conn.execute('DELETE FROM posts WHERE id = ? AND userId = ?', (id, user_id))
+
+        if cursor.rowcount == 0:
+            conn.close()
+            return jsonify({"error": "Post Not Found or You Don't Own It"}), 404
+
         conn.commit()
         return jsonify({"message": "Post deleted successfully"}), 200
-    
+
     except sqlite3.Error as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
-        
+
     except Exception as e:
         return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
     finally:
         if conn:
             conn.close()
