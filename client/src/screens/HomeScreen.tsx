@@ -104,8 +104,6 @@ const HomeScreen: React.FC = () => {
         }
 
         try {
-            const isUpdate = userReviews[postId];
-
             const response = await axios.put(
                 `http://localhost:5000/posts/review/${postId}`,
                 {
