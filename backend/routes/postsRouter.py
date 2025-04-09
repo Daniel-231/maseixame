@@ -45,7 +45,7 @@ def get_posts():
 
             # Fetch reviews for this post
             reviews = conn.execute('''
-                SELECT r.rating, r.userId, u.username
+                SELECT r.rating, r.userId, u.username, r.content
                 FROM reviews r
                 JOIN users u ON r.userId = u.id
                 WHERE r.postId = ?

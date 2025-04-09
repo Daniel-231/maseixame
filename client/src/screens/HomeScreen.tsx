@@ -13,12 +13,14 @@ type Review = {
 
 type ReviewData = {
     ratings: Review[];
+    content: string;
     average: number;
     count: number;
 };
 
 type Post = {
     id: number;
+    createdAt: string;
     title: string;
     description: string;
     location: string;
@@ -174,12 +176,7 @@ const HomeScreen: React.FC = () => {
         <div>
             {posts.length > 0 ? (
                 posts.map((post) => (
-                    <div key={post.id} style={{
-                        border: '1px solid #ccc',
-                        padding: '15px',
-                        margin: '15px 0',
-                        borderRadius: '8px'
-                    }}>
+                    <div key={post.id}>
                         <h2>Title: {post.title}</h2>
                         <p>By: {post.username}</p>
                         <p>Description: {post.description}</p>
@@ -189,29 +186,19 @@ const HomeScreen: React.FC = () => {
                             <h3>Ratings: {calculateAverageRating(post.reviews)}</h3>
 
                             {post.reviews?.ratings?.length > 0 && (
-                                <div style={{ marginBottom: '15px' }}>
+                                <div>
                                     {sortReviews(post.reviews.ratings).map((review) => (
-                                        <div key={review.id} style={{
-                                            marginBottom: '12px',
-                                            padding: '8px',
-                                            backgroundColor: review.userId === currentUserId ? '#f0f8ff' : 'transparent',
-                                            borderRadius: '4px'
-                                        }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                <span style={{ fontWeight: 'bold' }}>
-                                                    {review.username}: {review.rating}★
+                                        <div key={review.id}>
+                                            <div>
+                                                <span>
+                                                    {review.username}: {review.rating} ★
                                                 </span>
-                                                <span style={{ fontSize: '0.8em', color: '#666' }}>
-                                                    {new Date(review.createdAt).toLocaleDateString()}
+                                                <span>
+                                                    {new Date(post.createdAt).toLocaleDateString()}
                                                 </span>
                                             </div>
                                             {review.content && (
-                                                <p style={{
-                                                    marginTop: '5px',
-                                                    marginBottom: '0',
-                                                    padding: '5px 0 0 15px',
-                                                    borderTop: '1px solid #eee'
-                                                }}>
+                                                <p>
                                                     {review.content}
                                                 </p>
                                             )}
@@ -221,18 +208,13 @@ const HomeScreen: React.FC = () => {
                             )}
 
                             {currentUserId && (
-                                <div style={{
-                                    marginTop: '15px',
-                                    padding: '15px',
-                                    backgroundColor: '#f5f5f5',
-                                    borderRadius: '8px'
-                                }}>
-                                    <h4 style={{ margin: '0 0 10px 0' }}>
+                                <div>
+                                    <h4>
                                         {userReviews[post.id] ? 'Update your review' : 'Add your review'}
                                     </h4>
 
-                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                                        <label style={{ marginRight: '10px' }}>Rating:</label>
+                                    <div>
+                                        <label>Rating:</label>
                                         <input
                                             type="number"
                                             min="1"
@@ -240,43 +222,20 @@ const HomeScreen: React.FC = () => {
                                             value={reviewMap[post.id]?.rating || ''}
                                             onChange={(e) => handleInputChange(post.id, 'rating', e.target.value)}
                                             placeholder="1-5"
-                                            style={{
-                                                width: '60px',
-                                                padding: '5px',
-                                                borderRadius: '4px',
-                                                border: '1px solid #ccc'
-                                            }}
                                         />
                                     </div>
 
-                                    <div style={{ marginBottom: '10px' }}>
-                                        <label style={{ display: 'block', marginBottom: '5px' }}>Comment (optional):</label>
+                                    <div>
+                                        <label>Comment (optional):</label>
                                         <textarea
                                             value={reviewMap[post.id]?.content || ''}
                                             onChange={(e) => handleInputChange(post.id, 'content', e.target.value)}
-                                            placeholder="Share your thoughts about this post..."
-                                            style={{
-                                                width: '100%',
-                                                minHeight: '80px',
-                                                padding: '8px',
-                                                borderRadius: '4px',
-                                                border: '1px solid #ccc',
-                                                resize: 'vertical'
-                                            }}
+                                            placeholder="Add a Review"
                                         />
                                     </div>
 
                                     <button
                                         onClick={() => handleAddReview(post.id)}
-                                        style={{
-                                            padding: '8px 16px',
-                                            backgroundColor: '#4CAF50',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontWeight: 'bold'
-                                        }}
                                     >
                                         {userReviews[post.id] ? 'Update Review' : 'Post Review'}
                                     </button>
