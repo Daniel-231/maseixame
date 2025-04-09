@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { ErrorContext } from '../controllers/CustomErrorHandler';
+import '../styles/homescreen.css'; // Import the CSS file
 
 type Review = {
     id: number;
@@ -142,7 +143,6 @@ const HomeScreen: React.FC = () => {
         }
     };
 
-
     useEffect(() => {
         fetchData().catch((err: Error): void => console.error("Error:", err));
     }, []);
@@ -171,32 +171,30 @@ const HomeScreen: React.FC = () => {
     };
 
     return (
-        <div>
+        <div className="home-screen">
             {posts.length > 0 ? (
                 posts.map((post) => (
-                    <div key={post.id}>
-                        <h2>Title: {post.title}</h2>
-                        <p>By: {post.username}</p>
-                        <p>Description: {post.description}</p>
-                        <p>Location: {post.location}</p>
-
-                        <div>
-                            <h3>Ratings: {calculateAverageRating(post.reviews)}</h3>
-
+                    <div key={post.id} className="post-card">
+                        <h2 className="post-title">Title: {post.title}</h2>
+                        <p className="post-meta">By: <span className="post-author">{post.username}</span></p>
+                        <p className="post-description">Description: {post.description}</p>
+                        <p className="post-location">Location: {post.location}</p>
+    
+                        <div className="reviews-section">
+                            <h3 className="reviews-heading">Ratings: {calculateAverageRating(post.reviews)}</h3>
+    
                             {post.reviews?.ratings?.length > 0 && (
-                                <div>
+                                <div className="reviews-list">
                                     {sortReviews(post.reviews.ratings).map((review) => (
-                                        <div key={review.id}>
+                                        <div key={review.id} className="review-item">
                                             <div>
-                                                <span>
-                                                    {review.username}: {review.rating} ★
-                                                </span>
-                                                <span>
+                                                <span className="review-user">{review.username}: {review.rating} ★</span>
+                                                <span className="review-date">
                                                     {new Date(post.createdAt).toLocaleDateString()}
                                                 </span>
                                             </div>
                                             {review.content && (
-                                                <p>
+                                                <p className="review-content">
                                                     {review.content}
                                                 </p>
                                             )}
@@ -204,16 +202,17 @@ const HomeScreen: React.FC = () => {
                                     ))}
                                 </div>
                             )}
-
+    
                             {currentUserId && (
-                                <div>
-                                    <h4>
+                                <div className="review-form">
+                                    <h4 className="form-title">
                                         {userReviews[post.id] ? 'Update your review' : 'Add your review'}
                                     </h4>
-
-                                    <div>
-                                        <label>Rating:</label>
+    
+                                    <div className="form-group">
+                                        <label className="form-label">Rating:</label>
                                         <input
+                                            className="form-input"
                                             type="number"
                                             min="1"
                                             max="5"
@@ -222,17 +221,19 @@ const HomeScreen: React.FC = () => {
                                             placeholder="1-5"
                                         />
                                     </div>
-
-                                    <div>
-                                        <label>Comment (optional):</label>
+    
+                                    <div className="form-group">
+                                        <label className="form-label">Comment (optional):</label>
                                         <textarea
+                                            className="form-textarea"
                                             value={reviewMap[post.id]?.content || ''}
                                             onChange={(e) => handleInputChange(post.id, 'content', e.target.value)}
                                             placeholder="Add a Review"
                                         />
                                     </div>
-
+    
                                     <button
+                                        className="submit-button"
                                         onClick={() => handleAddReview(post.id)}
                                     >
                                         {userReviews[post.id] ? 'Update Review' : 'Post Review'}
@@ -243,7 +244,7 @@ const HomeScreen: React.FC = () => {
                     </div>
                 ))
             ) : (
-                <p>Loading posts...</p>
+                <p className="loading-message">Loading posts...</p>
             )}
         </div>
     );

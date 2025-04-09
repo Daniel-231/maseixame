@@ -332,3 +332,24 @@ def update_post_review(id):
     finally:
         if conn:
             conn.close()
+            
+            
+@posts_bp.route('/delete/<int:id>', methods=['DELETE'])
+@check_authentication
+def delete_Post(id):
+    conn = get_db_connection();
+    try:
+        post = conn.execute('DELETE FROM posts WHERE id = ?', (id,))
+        if not post:
+            return jsonify({"error": "Post Not Found"}), 404
+        conn.commit()
+        return jsonify({"message": "Post deleted successfully"}), 200
+    
+    except sqlite3.Error as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+        
+    except Exception as e:
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+    finally:
+        if conn:
+            conn.close()

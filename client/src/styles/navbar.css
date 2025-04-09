@@ -1,0 +1,37 @@
+/* Style for the main navigation bar */
+.main-nav {
+    background-color: #f5f5f5; /* A very light gray, almost white */
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid #eee; /* A thin, light gray line at the bottom */
+  }
+  
+  /* Style for the links inside the navigation bar */
+  .main-nav a {
+    text-decoration: none;
+    color: #2c3e50; /* A nice dark blue-gray */
+    font-weight: 500; /* Not too bold, but still stands out */
+  }
+  
+  /* Style when you hover your mouse over a link */
+  .main-nav a:hover {
+    color: #3498db; /* A brighter, friendly blue on hover */
+  }
+  
+  /* Style for the logout button */
+  .main-nav button {
+    background-color: #e74c3c; /* A friendly red for important actions */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  /* Style when you hover your mouse over the logout button */
+  .main-nav button:hover {
+    background-color: #c0392b; /* A slightly darker red on hover */
+  }

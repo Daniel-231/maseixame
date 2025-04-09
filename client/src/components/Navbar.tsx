@@ -1,6 +1,7 @@
 import React, {FC} from "react";
 import axios from "axios";
 import useAuthCheck from "../controllers/useAuthCheck";
+import "../styles/navbar.css"; // Make sure you have this import!
 
 const Navbar: FC = () => {
     const { status: isLoggedIn, loading } = useAuthCheck();
@@ -19,7 +20,7 @@ const Navbar: FC = () => {
     };
 
     return (
-        <nav>
+        <nav className="main-nav"> {/* Added the class name here! */}
             {!isLoggedIn && (
                 <>
                     <a href="/login">Login</a>
