@@ -4,12 +4,12 @@ import axios, {AxiosResponse} from "axios";
 
 import { useNavigate } from "react-router-dom";
 import {ErrorContext} from "../controllers/CustomErrorHandler";
+import '../styles/registerpage.css'; // Import the CSS file
 
 const RegisterScreen: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    //const [error, setError] = useState("");
 
     const navigate = useNavigate();
 
@@ -17,7 +17,7 @@ const RegisterScreen: React.FC = () => {
     const errorContext = useContext(ErrorContext);
 
     if (!errorContext) {
-        throw new Error("HomeScreen must be used within a CustomErrorHandler");
+        throw new Error("RegisterScreen must be used within a CustomErrorHandler");
     }
 
     const { setError } = errorContext;
@@ -46,12 +46,13 @@ const RegisterScreen: React.FC = () => {
     };
 
     return (
-        <div>
-            <h1>Register</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="username">Username:</label>
+        <div className="register-screen">
+            <h1 className="register-title">Register</h1>
+            <form className="register-form" onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label className="form-label" htmlFor="username">Username:</label>
                     <input
+                        className="form-input"
                         type="text"
                         id="username"
                         name="username"
@@ -60,9 +61,10 @@ const RegisterScreen: React.FC = () => {
 
                     />
                 </div>
-                <div>
-                    <label htmlFor="password">Password:</label>
+                <div className="form-group">
+                    <label className="form-label" htmlFor="password">Password:</label>
                     <input
+                        className="form-input"
                         type="password"
                         id="password"
                         name="password"
@@ -70,9 +72,10 @@ const RegisterScreen: React.FC = () => {
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                     />
                 </div>
-                <div>
-                    <label htmlFor="confirmPassword">Confirm Password:</label>
+                <div className="form-group">
+                    <label className="form-label" htmlFor="confirmPassword">Confirm Password:</label>
                     <input
+                        className="form-input"
                         type="password"
                         id="confirmPassword"
                         name="confirmPassword"
@@ -80,9 +83,8 @@ const RegisterScreen: React.FC = () => {
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
                     />
                 </div>
-                <button type="submit">Register</button>
+                <button className="register-button" type="submit">Register</button>
             </form>
-
         </div>
     )
 }

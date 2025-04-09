@@ -2,6 +2,7 @@ import React, {useContext, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { ErrorContext } from '../controllers/CustomErrorHandler';
+import '../styles/loginpage.css'; // Import the CSS file
 
 const LoginScreen: React.FC = () => {
     const [username, setUsername] = useState<string>("");
@@ -13,7 +14,7 @@ const LoginScreen: React.FC = () => {
     const errorContext = useContext(ErrorContext);
 
     if (!errorContext) {
-        throw new Error("HomeScreen must be used within a CustomErrorHandler");
+        throw new Error("LoginScreen must be used within a CustomErrorHandler");
     }
 
     const { setError } = errorContext;
@@ -40,24 +41,30 @@ const LoginScreen: React.FC = () => {
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Username"
-                    required
-                />
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    required
-                />
-                <button type="submit">Login</button>
+        <div className="login-screen">
+            <h2 className="login-title">Login</h2>
+            <form className="login-form" onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <input
+                        className="form-input"
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Username"
+                        required
+                    />
+                </div>
+                <div className="form-group">
+                    <input
+                        className="form-input"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Password"
+                        required
+                    />
+                </div>
+                <button className="login-button" type="submit">Login</button>
             </form>
         </div>
     );
