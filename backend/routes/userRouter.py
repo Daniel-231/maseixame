@@ -43,8 +43,17 @@ def register():
         if not username or not password:
             return jsonify({"error": "Username and password cannot be empty"}), 400
         
+        if len(username) < 2:
+            return jsonify({"error": "Username Needs To Be Atleast 2 Characters"}), 400
+        
+        if len(username) > 50:
+            return jsonify({"error": "Username Cannot Be Longer Than 20 Characters"}), 400
+        
         if len(password) < 6:
             return jsonify({"error": "Password Needs To Be Atleast 6 Characters"}), 400
+        
+        if len(password) > 50:
+            return jsonify({"error": "Password Cannot Be Longer Than 50 Characters"}), 400
 
         # Hash the password
         hashed_password = generate_password_hash(password)

@@ -77,8 +77,8 @@ const HomeScreen: React.FC = () => {
                     reviewedPosts[post.id] = hasReviewed;
 
                     initialReviewMap[post.id] = {
-                        rating: hasReviewed && userReview ? userReview.rating : '',
-                        content: hasReviewed && userReview ? (userReview.content || '') : ''
+                        rating: '',
+                        content: ''
                     };
                 });
 
@@ -123,20 +123,13 @@ const HomeScreen: React.FC = () => {
             );
 
             setUserReviews(prev => ({ ...prev, [postId]: true }));
-
-            const userReview = response.data.reviews.ratings.find(
-                (r: Review) => r.userId === currentUserId
-            );
-
-            if (userReview) {
-                setReviewMap(prev => ({
-                    ...prev,
-                    [postId]: {
-                        rating: userReview.rating,
-                        content: userReview.content || ''
-                    }
-                }));
-            }
+            setReviewMap(prev => ({
+                ...prev,
+                [postId]: {
+                    rating: '',
+                    content: ''
+                }
+            }));
         } catch (error: any) {
             setError(new Error(error.response?.data?.error || "Failed to add review"));
             console.error(error);
@@ -192,10 +185,10 @@ const HomeScreen: React.FC = () => {
                         <p className="post-meta">By: <span className="post-author">{post.username}</span></p>
                         <p className="post-description">Description: {post.description}</p>
                         <p className="post-location">Location: {post.location}</p>
-    
+
                         <div className="reviews-section">
                             <h3 className="reviews-heading">Ratings: {calculateAverageRating(post.reviews)}</h3>
-    
+
                             {post.reviews?.ratings?.length > 0 && (
                                 <div className="reviews-list">
                                     {sortReviews(post.reviews.ratings).map((review) => (
@@ -215,13 +208,13 @@ const HomeScreen: React.FC = () => {
                                     ))}
                                 </div>
                             )}
-    
+
                             {currentUserId && (
                                 <div className="review-form">
                                     <h4 className="form-title">
                                         {userReviews[post.id] ? 'Update your review' : 'Add your review'}
                                     </h4>
-    
+
                                     <div className="form-group">
                                         <label className="form-label">Rating:</label>
                                         <input
@@ -234,7 +227,7 @@ const HomeScreen: React.FC = () => {
                                             placeholder="1-5"
                                         />
                                     </div>
-    
+
                                     <div className="form-group">
                                         <label className="form-label">Comment (optional):</label>
                                         <textarea
@@ -244,14 +237,16 @@ const HomeScreen: React.FC = () => {
                                             placeholder="Add a Review"
                                         />
                                     </div>
-    
+
                                     <button
                                         className="submit-button"
                                         onClick={() => handleAddReview(post.id)}
                                     >
                                         {userReviews[post.id] ? 'Update Review' : 'Post Review'}
                                     </button>
-                                    <button className="delete-button" onClick={() => handleDeletePost(post.id)}>Delete</button>
+                                    {post.userId === currentUserId && (
+                                        <button className="delete-button" onClick={() => handleDeletePost(post.id)}>Delete</button>
+                                    )}
                                 </div>
                             )}
                         </div>
